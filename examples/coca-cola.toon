@@ -1,0 +1,22 @@
+supplierType: JURIDICAL
+supplierName: COCA-COLA INDUSTRIAS LTDA
+tradeName: COCA-COLA BRASIL
+taxId:
+  cnpj: "45997000000104"
+status: ACTIVE
+country: BR
+address:
+  street: Av. Anhanguera
+  number: "5000"
+  district: Setor Central
+  city: Goiânia
+  state: GO
+  zipCode: "74043010"
+contact:
+  email: financeiro@cocacola.com.br
+  phone: +556230000000
+classification:
+  supplierGroup: NACIONAL
+integration:
+  externalId: "toon:coca-cola-br-go"
+  sourceSystem: stegia

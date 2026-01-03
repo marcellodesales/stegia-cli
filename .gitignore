@@ -1,0 +1,13 @@
+# Binaries
+stegia
+*.exe
+*.out
+
+# Env files
+local.env
+prd.env
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
