@@ -2,6 +2,7 @@ package suppliers
 
 import (
 	"log/slog"
+    "os"
 
 	"stegia/internal/totvs/client"
 )
@@ -19,4 +20,8 @@ func (s *Service) Create(payload map[string]any, companyId string) (map[string]a
 
 	s.Log.Error("real HTTP calls disabled in this prototype", "hostname", s.Client.Hostname)
 	return nil, 0, nil
+}
+
+func (s *Service) LoadCached(cachePath string) ([]byte, error) {
+	return os.ReadFile(cachePath)
 }

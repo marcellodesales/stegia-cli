@@ -55,7 +55,28 @@ func (c *Controller) AddFromTOON(filePath string, explicitCompanyId string) erro
 		c.Log.Error("supplier create failed", "companyId", companyId, "error", err)
 		return err
 	}
-	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, util.JSONPretty(resp))
+
+	respBytes := util.JSONPretty(resp)
+	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, respBytes)
+
+	// Cache only in mock mode (example.com) OR always cache, your choice.
+	if c.Service.Client.Hostname == "example.com" {
+		supplierId := util.StrAny(resp["supplierId"])
+		if supplierId == "" {
+			c.Log.Error("mock response missing supplierId; cannot cache")
+			return nil
+		}
+
+		cacheBase := "examples"
+		cachePath := util.SupplierCachePath(cacheBase, supplierId)
+
+		if err := util.WriteFileAtomic(cachePath, respBytes); err != nil {
+			c.Log.Error("failed to cache supplier", "path", cachePath, "error", err)
+			return nil // do not fail the command just because caching failed
+		}
+
+		c.Log.Info("cached supplier", "path", cachePath)
+	}
 	return nil
 }
 
@@ -89,3 +110,24 @@ func selectCompanyId(companies client.CompaniesResponse, explicit string, toonDo
 	}
 	return "", "no ACTIVE companies"
 }
+
+func (c *Controller) ViewFromCache(id string) error {
+	if strings.TrimSpace(id) == "" {
+		return fmt.Errorf("missing --id")
+	}
+
+	cachePath := util.SupplierCachePath("examples", id)
+
+	c.Log.Info("loading cached supplier", "id", id, "path", cachePath)
+
+	b, err := c.Service.LoadCached(cachePath)
+	if err != nil {
+		c.Log.Error("failed to read cached supplier", "path", cachePath, "error", err)
+		return err
+	}
+
+	fmt.Println("\n=== CACHED SUPPLIER ===")
+	fmt.Println(string(b))
+	return nil
+}
+
