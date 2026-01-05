@@ -50,6 +50,31 @@ var suppliersAddCmd = &cobra.Command{
 	},
 }
 
+var suppliersViewCmd = &cobra.Command{
+	Use:   "view",
+	Short: "View a cached supplier by id (no HTTP call)",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		log := logger.New()
+
+		id, _ := cmd.Flags().GetString("id")
+		env := util.LoadTotvsEnv()
+		log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
+
+		cli := factory.ClientFactory{Log: log}.New(env)
+		sf := factory.ServiceFactory{Log: log}
+		suppliersSvc := sf.SuppliersService(cli)
+
+		suppliersCtrl := &suppliers.Controller{
+			Service: suppliersSvc,
+			Builder: suppliers.Builder{},
+			// Companies not needed for view
+			Log: log,
+		}
+
+		return suppliersCtrl.ViewFromCache(id)
+	},
+}
+
 func init() {
 	totvsCmd.AddCommand(suppliersCmd)
 	suppliersCmd.AddCommand(suppliersAddCmd)
@@ -57,4 +82,8 @@ func init() {
 	suppliersAddCmd.Flags().StringP("file", "f", "", "Path to .toon file (TOON format)")
 	_ = suppliersAddCmd.MarkFlagRequired("file")
 	suppliersAddCmd.Flags().String("company-id", "", "CompanyId header value (optional; auto-selected if omitted)")
+
+	suppliersViewCmd.Flags().String("id", "", "Supplier ID (e.g., SUP-902341)")
+	_ = suppliersViewCmd.MarkFlagRequired("id")
+    suppliersCmd.AddCommand(suppliersViewCmd)
 }

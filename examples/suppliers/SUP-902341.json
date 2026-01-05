@@ -1,0 +1,40 @@
+{
+  "companyId": "2",
+  "createdAt": "2026-01-03T23:44:50Z",
+  "echoRequest": {
+    "address": {
+      "city": "Goiânia",
+      "district": "Setor Central",
+      "number": "5000",
+      "state": "GO",
+      "street": "Av. Anhanguera",
+      "zipCode": "74043010"
+    },
+    "classification": {
+      "supplierGroup": "NACIONAL"
+    },
+    "contact": {
+      "email": "financeiro@cocacola.com.br",
+      "phone": "+556230000000"
+    },
+    "country": "BR",
+    "integration": {
+      "externalId": "toon:coca-cola-br-go",
+      "sourceSystem": "stegia"
+    },
+    "status": "ACTIVE",
+    "supplierName": "COCA-COLA INDUSTRIAS LTDA",
+    "supplierType": "JURIDICAL",
+    "taxId": {
+      "cnpj": "45997000000104"
+    },
+    "tradeName": "COCA-COLA BRASIL"
+  },
+  "links": {
+    "self": "/api/cdp/v1/suppliers/SUP-902341"
+  },
+  "message": "Mocked response (example.com); no real Datasul call executed.",
+  "status": "CREATED",
+  "supplierCode": "FORN-000902341",
+  "supplierId": "SUP-902341"
+}

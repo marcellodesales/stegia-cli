@@ -25,48 +25,29 @@ func (b Builder) BuildCreateRequest(baseURL, basicAuth, companyId string, payloa
 }
 
 func (b Builder) BuildPayloadFromTOON(doc map[string]any) map[string]any {
-	getStr := func(k string) string {
-		v, ok := doc[k]
-		if !ok {
-			return ""
-		}
-		s, _ := v.(string)
-		return strings.TrimSpace(s)
+	// The TOON document is the canonical payload.
+	// Apply safe defaults only when missing.
+	payload := doc
+
+	// Ensure integration.sourceSystem defaults to "stegia" if present/missing
+	integ, _ := payload["integration"].(map[string]any)
+	if integ == nil {
+		integ = map[string]any{}
+		payload["integration"] = integ
+	}
+	if util.StrAny(integ["sourceSystem"]) == "" {
+		integ["sourceSystem"] = "stegia"
 	}
 
-	addr := map[string]any{}
-	if a, ok := doc["address"].(map[string]any); ok {
-		addr = a
+	// Default status/country if omitted
+	if util.StrAny(payload["status"]) == "" {
+		payload["status"] = "ACTIVE"
+	}
+	if util.StrAny(payload["country"]) == "" {
+		payload["country"] = "BR"
 	}
 
-	supplierName := firstNonEmpty(getStr("supplierName"), getStr("name"), "COCA-COLA INDUSTRIAS LTDA")
-	tradeName := firstNonEmpty(getStr("tradeName"), "COCA-COLA BRASIL")
-	cnpj := firstNonEmpty(getStr("cnpj"), "00000000000000")
-
-	return map[string]any{
-		"supplierType": "JURIDICAL",
-		"supplierName": supplierName,
-		"tradeName":    tradeName,
-		"taxId": map[string]any{
-			"cnpj": cnpj,
-		},
-		"status":  "ACTIVE",
-		"country": "BR",
-		"address": map[string]any{
-			"city":       firstNonEmpty(util.StrAny(addr["city"]), "Goiânia"),
-			"state":      firstNonEmpty(util.StrAny(addr["state"]), "GO"),
-			"street":     firstNonEmpty(util.StrAny(addr["street"]), "Av. Anhanguera"),
-			"number":     firstNonEmpty(util.StrAny(addr["number"]), "5000"),
-			"district":   firstNonEmpty(util.StrAny(addr["district"]), "Setor Central"),
-			"zipCode":    firstNonEmpty(util.StrAny(addr["zipCode"]), util.StrAny(addr["zip"]), "74043010"),
-			"complement": util.StrAny(addr["complement"]),
-		},
-		"integration": map[string]any{
-			"externalId":   firstNonEmpty(getStr("externalId"), "toon:coca-cola-br-go"),
-			"sourceSystem": "stegia",
-		},
-		"source": doc,
-	}
+	return payload
 }
 
 func firstNonEmpty(vals ...string) string {
