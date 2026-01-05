@@ -176,7 +176,12 @@ required flag(s) "file" not set
 $ ./stegia totvs suppliers add  --company-id 2 -f
 ```
 
-## Supplier Example 
+## Supplier Example
+
+* Make sure to verify how `toon` is formatted
+  * It's definitely similar to `yaml`, but shorter at cases
+* Using https://github.com/toon-format/toon-go for Marshall/Unmarshall
+  * Verified at https://rapidtoolset.com/en/tool/toon-json-converter 
 
 ```yaml
 supplierType: JURIDICAL
@@ -208,34 +213,56 @@ integration:
 * Add a company based on an existing ACTIVE company
 
 ```console
-$ ./stegia totvs suppliers add  --company-id 2 -f examples/coca-cola.toon
-time=2026-01-03T14:55:55.397-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
-time=2026-01-03T14:55:55.398-08:00 level=INFO msg="parsed TOON file" file=examples/coca-cola.toon
-time=2026-01-03T14:55:55.398-08:00 level=INFO msg="selected company" companyId=2 reason="explicit --company-id (not found/ACTIVE in list)"
+$ ./stegia totvs suppliers add --company-id 02 -f examples/coca-cola.toon
+time=2026-01-04T16:51:40.469-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T16:51:40.470-08:00 level=INFO msg="parsed TOON file" file=examples/coca-cola.toon
+time=2026-01-04T16:51:40.470-08:00 level=INFO msg="selected company" companyId=02 reason="explicit --company-id (validated ACTIVE)"
 
 === HTTP REQUEST ===
 POST https://example.com/api/cdp/v1/suppliers
-Authorization: Basic YWRtaW46YWRtaW4=
-Companyid: 2
-Content-Type: application/json
 Accept: application/json
+Authorization: Basic YWRtaW46YWRtaW4=
+Companyid: 02
+Content-Type: application/json
 
 {
   "address": {
     "city": "Goiânia",
-    "complement": "",
     "district": "Setor Central",
     "number": "5000",
     "state": "GO",
     "street": "Av. Anhanguera",
     "zipCode": "74043010"
   },
+  "classification": {
+    "supplierGroup": "NACIONAL"
+  },
+  "contact": {
+    "email": "financeiro@cocacola.com.br",
+    "phone": "+556230000000"
+  },
   "country": "BR",
   "integration": {
     "externalId": "toon:coca-cola-br-go",
     "sourceSystem": "stegia"
   },
-  "source": {
+  "status": "ACTIVE",
+  "supplierName": "COCA-COLA INDUSTRIAS LTDA",
+  "supplierType": "JURIDICAL",
+  "taxId": {
+    "cnpj": "45997000000104"
+  },
+  "tradeName": "COCA-COLA BRASIL"
+}
+
+=== HTTP RESPONSE ===
+HTTP/1.1 201
+Content-Type: application/json
+
+{
+  "companyId": "02",
+  "createdAt": "2026-01-05T00:51:40Z",
+  "echoRequest": {
     "address": {
       "city": "Goiânia",
       "district": "Setor Central",
@@ -264,71 +291,97 @@ Accept: application/json
     },
     "tradeName": "COCA-COLA BRASIL"
   },
-  "status": "ACTIVE",
-  "supplierName": "COCA-COLA INDUSTRIAS LTDA",
-  "supplierType": "JURIDICAL",
-  "taxId": {
-    "cnpj": "00000000000000"
+  "links": {
+    "self": "/api/cdp/v1/suppliers/SUP-902341"
   },
-  "tradeName": "COCA-COLA BRASIL"
+  "message": "Mocked response (example.com); no real Datasul call executed.",
+  "status": "CREATED",
+  "supplierCode": "FORN-000902341",
+  "supplierId": "SUP-902341"
 }
+time=2026-01-04T16:51:40.471-08:00 level=INFO msg="cached supplier (TOON)" path=examples/suppliers/SUP-902341.toon
+```
 
-=== HTTP RESPONSE ===
-HTTP/1.1 201
-Content-Type: application/json
+## Suppliers View
 
+* View defaults to `.toon` output
+
+```console
+$ ./stegia totvs suppliers view --id SUP-902341
+time=2026-01-04T16:52:11.620-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T16:52:11.620-08:00 level=INFO msg="loading cached supplier" id=SUP-902341 path=examples/suppliers/SUP-902341.toon
+
+=== CACHED SUPPLIER ===
+companyId: "02"
+createdAt: "2026-01-05T00:51:40Z"
+echoRequest:
+  address:
+    city: Goiânia
+    district: Setor Central
+    number: "5000"
+    state: GO
+    street: Av. Anhanguera
+    zipCode: "74043010"
+  classification:
+    supplierGroup: NACIONAL
+  contact:
+    email: financeiro@cocacola.com.br
+    phone: +556230000000
+  country: BR
+  integration:
+    externalId: "toon:coca-cola-br-go"
+    sourceSystem: stegia
+  status: ACTIVE
+  supplierName: COCA-COLA INDUSTRIAS LTDA
+  supplierType: JURIDICAL
+  taxId:
+    cnpj: "45997000000104"
+  tradeName: COCA-COLA BRASIL
+links:
+  self: /api/cdp/v1/suppliers/SUP-902341
+message: Mocked response (example.com); no real Datasul call executed.
+status: CREATED
+supplierCode: FORN-000902341
+supplierId: SUP-902341
+```
+
+* The parameter -f to format in json is simple
+
+```console
+$ ./stegia totvs suppliers view --id SUP-902341 -f json
+time=2026-01-04T16:52:22.841-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T16:52:22.842-08:00 level=INFO msg="loading cached supplier" id=SUP-902341 path=examples/suppliers/SUP-902341.toon
+
+=== CACHED SUPPLIER ===
 {
-  "companyId": "2",
-  "createdAt": "2026-01-03T22:55:55Z",
+  "companyId": "02",
+  "createdAt": "2026-01-05T00:51:40Z",
   "echoRequest": {
     "address": {
       "city": "Goiânia",
-      "complement": "",
       "district": "Setor Central",
       "number": "5000",
       "state": "GO",
       "street": "Av. Anhanguera",
       "zipCode": "74043010"
     },
+    "classification": {
+      "supplierGroup": "NACIONAL"
+    },
+    "contact": {
+      "email": "financeiro@cocacola.com.br",
+      "phone": "+556230000000"
+    },
     "country": "BR",
     "integration": {
       "externalId": "toon:coca-cola-br-go",
       "sourceSystem": "stegia"
     },
-    "source": {
-      "address": {
-        "city": "Goiânia",
-        "district": "Setor Central",
-        "number": "5000",
-        "state": "GO",
-        "street": "Av. Anhanguera",
-        "zipCode": "74043010"
-      },
-      "classification": {
-        "supplierGroup": "NACIONAL"
-      },
-      "contact": {
-        "email": "financeiro@cocacola.com.br",
-        "phone": "+556230000000"
-      },
-      "country": "BR",
-      "integration": {
-        "externalId": "toon:coca-cola-br-go",
-        "sourceSystem": "stegia"
-      },
-      "status": "ACTIVE",
-      "supplierName": "COCA-COLA INDUSTRIAS LTDA",
-      "supplierType": "JURIDICAL",
-      "taxId": {
-        "cnpj": "45997000000104"
-      },
-      "tradeName": "COCA-COLA BRASIL"
-    },
     "status": "ACTIVE",
     "supplierName": "COCA-COLA INDUSTRIAS LTDA",
     "supplierType": "JURIDICAL",
     "taxId": {
-      "cnpj": "00000000000000"
+      "cnpj": "45997000000104"
     },
     "tradeName": "COCA-COLA BRASIL"
   },
@@ -341,5 +394,4 @@ Content-Type: application/json
   "supplierId": "SUP-902341"
 }
 ```
-
 
