@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -11,6 +12,7 @@ import (
 
 var (
 	logLevel string
+	envName  string
 )
 
 var rootCmd = &cobra.Command{
@@ -37,7 +39,18 @@ func init() {
 		"Override LOG_LEVEL in .env (supported: none, info, debug, error)",
 	)
 
+	rootCmd.PersistentFlags().StringVar(
+		&envName,
+		"env",
+		"",
+		"Environment name: ENV=<name> selects <name>.env (default: local.env)",
+	)
+
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if cmd.Flags().Changed("env") && strings.TrimSpace(envName) != "" {
+			// Make ENV visible to util.LoadEnvFile(); do not read or print its value.
+			os.Setenv("ENV", envName)
+		}
 		if cmd.Flags().Changed("log-level") {
 			logger.SetLevelOverride(logLevel)
 		}
