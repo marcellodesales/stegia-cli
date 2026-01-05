@@ -16,7 +16,7 @@ type Controller struct {
 	Log     *slog.Logger
 }
 
-func (c *Controller) ListAndPrint() error {
+func (c *Controller) ListAndPrint(statusFilter string) error {
 	req, err := c.Builder.BuildListRequest(c.Service.Client.BaseURL(), c.Service.Client.BasicAuth)
 	if err != nil {
 		c.Log.Error("build companies request failed", "error", err)
@@ -39,11 +39,13 @@ func (c *Controller) ListAndPrint() error {
     	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, body)
     }
 
+    statusFilter = strings.TrimSpace(strings.ToUpper(statusFilter))
 	for _, it := range res.Items {
-		if strings.EqualFold(it.Status, "ACTIVE") {
-			fmt.Printf("- companyId=%s code=%s name=%s (%s/%s)\n",
-				it.CompanyId, it.CompanyCode, it.CompanyName, it.City, it.State)
+       	if statusFilter != "" && !strings.EqualFold(it.Status, statusFilter) {
+			continue
 		}
+		fmt.Printf("- (%s) companyId=%s  code=%s name=%s (%s/%s)\n",
+			it.Status, it.CompanyId, it.CompanyCode, it.CompanyName, it.City, it.State)
 	}
 	return nil
 }
