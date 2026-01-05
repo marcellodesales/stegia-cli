@@ -395,3 +395,168 @@ time=2026-01-04T16:52:22.842-08:00 level=INFO msg="loading cached supplier" id=S
 }
 ```
 
+## Command Globals
+
+* Log level is a global param to turn on/off debug logs
+
+```console
+$ ./stegia totvs suppliers view --id SUP-902341 -f json
+{
+  "companyId": "02",
+  "createdAt": "2026-01-05T01:22:50Z",
+  "echoRequest": {
+    "address": {
+      "city": "Goiânia",
+      "district": "Setor Central",
+      "number": "5000",
+      "state": "GO",
+      "street": "Av. Anhanguera",
+      "zipCode": "74043010"
+    },
+    "classification": {
+      "supplierGroup": "NACIONAL"
+    },
+    "contact": {
+      "email": "financeiro@cocacola.com.br",
+      "phone": "+556230000000"
+    },
+    "country": "BR",
+    "integration": {
+      "externalId": "toon:coca-cola-br-go",
+      "sourceSystem": "stegia"
+    },
+    "status": "ACTIVE",
+    "supplierName": "COCA-COLA INDUSTRIAS LTDA",
+    "supplierType": "JURIDICAL",
+    "taxId": {
+      "cnpj": "45997000000104"
+    },
+    "tradeName": "COCA-COLA BRASIL"
+  },
+  "links": {
+    "self": "/api/cdp/v1/suppliers/SUP-902341"
+  },
+  "message": "Mocked response (example.com); no real Datasul call executed.",
+  "status": "CREATED",
+  "supplierCode": "FORN-000902341",
+  "supplierId": "SUP-902341"
+}
+
+$ ./stegia totvs suppliers view --id SUP-902341
+companyId: "02"
+createdAt: "2026-01-05T01:22:50Z"
+echoRequest:
+  address:
+    city: Goiânia
+    district: Setor Central
+    number: "5000"
+    state: GO
+    street: Av. Anhanguera
+    zipCode: "74043010"
+  classification:
+    supplierGroup: NACIONAL
+  contact:
+    email: financeiro@cocacola.com.br
+    phone: +556230000000
+  country: BR
+  integration:
+    externalId: "toon:coca-cola-br-go"
+    sourceSystem: stegia
+  status: ACTIVE
+  supplierName: COCA-COLA INDUSTRIAS LTDA
+  supplierType: JURIDICAL
+  taxId:
+    cnpj: "45997000000104"
+  tradeName: COCA-COLA BRASIL
+links:
+  self: /api/cdp/v1/suppliers/SUP-902341
+message: Mocked response (example.com); no real Datasul call executed.
+status: CREATED
+supplierCode: FORN-000902341
+supplierId: SUP-902341
+```
+
+* Specifying the log level shows details
+
+```console
+$ ./stegia -l debug totvs suppliers view --id SUP-902341
+time=2026-01-04T17:23:12.572-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T17:23:12.572-08:00 level=DEBUG msg="creating TOTVS client" hostname=example.com envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env
+time=2026-01-04T17:23:12.572-08:00 level=INFO msg="loading cached supplier" id=SUP-902341 path=examples/suppliers/SUP-902341.toon
+companyId: "02"
+createdAt: "2026-01-05T01:22:50Z"
+echoRequest:
+  address:
+    city: Goiânia
+    district: Setor Central
+    number: "5000"
+    state: GO
+    street: Av. Anhanguera
+    zipCode: "74043010"
+  classification:
+    supplierGroup: NACIONAL
+  contact:
+    email: financeiro@cocacola.com.br
+    phone: +556230000000
+  country: BR
+  integration:
+    externalId: "toon:coca-cola-br-go"
+    sourceSystem: stegia
+  status: ACTIVE
+  supplierName: COCA-COLA INDUSTRIAS LTDA
+  supplierType: JURIDICAL
+  taxId:
+    cnpj: "45997000000104"
+  tradeName: COCA-COLA BRASIL
+links:
+  self: /api/cdp/v1/suppliers/SUP-902341
+message: Mocked response (example.com); no real Datasul call executed.
+status: CREATED
+supplierCode: FORN-000902341
+supplierId: SUP-902341
+
+$ ./stegia -l debug totvs suppliers view --id SUP-902341 -f json
+time=2026-01-04T17:23:21.123-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T17:23:21.123-08:00 level=DEBUG msg="creating TOTVS client" hostname=example.com envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env
+time=2026-01-04T17:23:21.123-08:00 level=INFO msg="loading cached supplier" id=SUP-902341 path=examples/suppliers/SUP-902341.toon
+{
+  "companyId": "02",
+  "createdAt": "2026-01-05T01:22:50Z",
+  "echoRequest": {
+    "address": {
+      "city": "Goiânia",
+      "district": "Setor Central",
+      "number": "5000",
+      "state": "GO",
+      "street": "Av. Anhanguera",
+      "zipCode": "74043010"
+    },
+    "classification": {
+      "supplierGroup": "NACIONAL"
+    },
+    "contact": {
+      "email": "financeiro@cocacola.com.br",
+      "phone": "+556230000000"
+    },
+    "country": "BR",
+    "integration": {
+      "externalId": "toon:coca-cola-br-go",
+      "sourceSystem": "stegia"
+    },
+    "status": "ACTIVE",
+    "supplierName": "COCA-COLA INDUSTRIAS LTDA",
+    "supplierType": "JURIDICAL",
+    "taxId": {
+      "cnpj": "45997000000104"
+    },
+    "tradeName": "COCA-COLA BRASIL"
+  },
+  "links": {
+    "self": "/api/cdp/v1/suppliers/SUP-902341"
+  },
+  "message": "Mocked response (example.com); no real Datasul call executed.",
+  "status": "CREATED",
+  "supplierCode": "FORN-000902341",
+  "supplierId": "SUP-902341"
+}
+```
