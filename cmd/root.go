@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	logLevel string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "stegia",
 	Short: "stegia CLI",
@@ -21,5 +25,15 @@ func Execute() {
 }
 
 func init() {
+
+	// Global / persistent flag
+	rootCmd.PersistentFlags().StringVarP(
+		&logLevel,
+		"log-level",
+		"l",
+		"none",
+		"Log level: none, info, debug, error",
+	)
+
 	rootCmd.AddCommand(totvsCmd)
 }

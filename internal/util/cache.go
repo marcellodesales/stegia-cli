@@ -23,7 +23,7 @@ func WriteFileAtomic(path string, data []byte) error {
 }
 
 func SupplierCachePath(baseDir, supplierId string) string {
-	return filepath.Join(baseDir, "suppliers", fmt.Sprintf("%s.json", supplierId))
+    return filepath.Join(baseDir, "suppliers", fmt.Sprintf("%s.toon", supplierId))
 }
 
 

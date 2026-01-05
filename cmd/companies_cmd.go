@@ -18,7 +18,7 @@ var companiesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List companies (GET /api/btb/v1/companies)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log := logger.New()
+        log := logger.New(logger.Level(logLevel))
 
 		env := util.LoadTotvsEnv()
 		log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
