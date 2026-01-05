@@ -51,28 +51,28 @@ var suppliersAddCmd = &cobra.Command{
 }
 
 var suppliersViewCmd = &cobra.Command{
-	Use:   "view",
-	Short: "View a cached supplier by id (no HTTP call)",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		log := logger.New()
+    Use:   "view",
+    Short: "View a cached supplier by id (reads examples/suppliers/<id>.toon)",
+    RunE: func(cmd *cobra.Command, args []string) error {
+        log := logger.New()
 
-		id, _ := cmd.Flags().GetString("id")
-		env := util.LoadTotvsEnv()
-		log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
+        id, _ := cmd.Flags().GetString("id")
+        format, _ := cmd.Flags().GetString("format")
 
-		cli := factory.ClientFactory{Log: log}.New(env)
-		sf := factory.ServiceFactory{Log: log}
-		suppliersSvc := sf.SuppliersService(cli)
+        env := util.LoadTotvsEnv()
+        log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
 
-		suppliersCtrl := &suppliers.Controller{
-			Service: suppliersSvc,
-			Builder: suppliers.Builder{},
-			// Companies not needed for view
-			Log: log,
-		}
+        cli := factory.ClientFactory{Log: log}.New(env)
+        sf := factory.ServiceFactory{Log: log}
+        suppliersSvc := sf.SuppliersService(cli)
 
-		return suppliersCtrl.ViewFromCache(id)
-	},
+        ctrl := &suppliers.Controller{
+            Service: suppliersSvc,
+            Builder: suppliers.Builder{},
+            Log:     log,
+        }
+        return ctrl.ViewFromCache(id, format)
+    },
 }
 
 func init() {
@@ -84,6 +84,7 @@ func init() {
 	suppliersAddCmd.Flags().String("company-id", "", "CompanyId header value (optional; auto-selected if omitted)")
 
 	suppliersViewCmd.Flags().String("id", "", "Supplier ID (e.g., SUP-902341)")
+    suppliersViewCmd.Flags().StringP("format", "f", "toon", "Output format: toon or json")
 	_ = suppliersViewCmd.MarkFlagRequired("id")
     suppliersCmd.AddCommand(suppliersViewCmd)
 }

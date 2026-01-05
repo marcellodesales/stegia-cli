@@ -1,9 +1,11 @@
 package suppliers
 
 import (
+    "encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
+    toon "github.com/toon-format/toon-go"
 
 	"stegia/internal/totvs/client"
 	"stegia/internal/util"
@@ -70,12 +72,19 @@ func (c *Controller) AddFromTOON(filePath string, explicitCompanyId string) erro
 		cacheBase := "examples"
 		cachePath := util.SupplierCachePath(cacheBase, supplierId)
 
-		if err := util.WriteFileAtomic(cachePath, respBytes); err != nil {
-			c.Log.Error("failed to cache supplier", "path", cachePath, "error", err)
-			return nil // do not fail the command just because caching failed
-		}
+        // Marshal cached representation to TOON using toon-go :contentReference[oaicite:1]{index=1}
+        b, err := toon.Marshal(resp, toon.WithIndent(2))
+        if err != nil {
+            c.Log.Error("failed to marshal cache as TOON", "error", err)
+            return nil
+        }
 
-		c.Log.Info("cached supplier", "path", cachePath)
+        if err := util.WriteFileAtomic(cachePath, b); err != nil {
+            c.Log.Error("failed to cache supplier", "path", cachePath, "error", err)
+            return nil
+        }
+
+        c.Log.Info("cached supplier (TOON)", "path", cachePath)
 	}
 	return nil
 }
@@ -111,23 +120,49 @@ func selectCompanyId(companies client.CompaniesResponse, explicit string, toonDo
 	return "", "no ACTIVE companies"
 }
 
-func (c *Controller) ViewFromCache(id string) error {
-	if strings.TrimSpace(id) == "" {
-		return fmt.Errorf("missing --id")
-	}
+func (c *Controller) ViewFromCache(id string, format string) error {
+    id = strings.TrimSpace(id)
+    if id == "" {
+        return fmt.Errorf("missing --id")
+    }
 
-	cachePath := util.SupplierCachePath("examples", id)
+    format = strings.ToLower(strings.TrimSpace(format))
+    if format == "" {
+        format = "toon"
+    }
+    if format != "toon" && format != "json" {
+        return fmt.Errorf("invalid --format %q (supported: toon, json)", format)
+    }
 
-	c.Log.Info("loading cached supplier", "id", id, "path", cachePath)
+    cachePath := util.SupplierCachePath("examples", id)
+    c.Log.Info("loading cached supplier", "id", id, "path", cachePath)
 
-	b, err := c.Service.LoadCached(cachePath)
-	if err != nil {
-		c.Log.Error("failed to read cached supplier", "path", cachePath, "error", err)
-		return err
-	}
+    raw, err := c.Service.LoadCached(cachePath)
+    if err != nil {
+        c.Log.Error("failed to read cached supplier", "path", cachePath, "error", err)
+        return err
+    }
 
-	fmt.Println("\n=== CACHED SUPPLIER ===")
-	fmt.Println(string(b))
-	return nil
+    fmt.Println("\n=== CACHED SUPPLIER ===")
+
+    if format == "toon" {
+        fmt.Println(string(raw))
+        return nil
+    }
+
+    // format == "json": decode cached TOON -> any -> json
+    v, err := toon.Decode(raw) // parses TOON into Go values :contentReference[oaicite:3]{index=3}
+    if err != nil {
+        c.Log.Error("failed to decode cached TOON", "error", err)
+        return err
+    }
+
+    b, err := json.MarshalIndent(v, "", "  ")
+    if err != nil {
+        c.Log.Error("failed to marshal JSON", "error", err)
+        return err
+    }
+    fmt.Println(string(b))
+    return nil
 }
 
