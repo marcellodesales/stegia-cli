@@ -20,7 +20,7 @@ var companiesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List companies (GET /api/btb/v1/companies)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-        log := logger.New(logger.Level(logLevel))
+		log := logger.New()
 
 		env := util.LoadTotvsEnv()
 		log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
@@ -33,7 +33,7 @@ var companiesListCmd = &cobra.Command{
 			Builder: companies.Builder{},
 			Log:     log,
 		}
-        return ctrl.ListAndPrint(companyStatus)
+		return ctrl.ListAndPrint(companyStatus)
 	},
 }
 

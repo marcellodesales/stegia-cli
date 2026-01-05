@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+
+	"stegia/internal/util"
 )
 
 type Level string
@@ -16,8 +18,30 @@ const (
 	LevelError Level = "error"
 )
 
-func New(level Level) *slog.Logger {
-	level = Level(strings.ToLower(string(level)))
+var levelOverride string
+
+// SetLevelOverride allows CLI flags to override LOG_LEVEL from .env.
+func SetLevelOverride(level string) {
+	levelOverride = strings.TrimSpace(level)
+}
+
+func resolveLevel() Level {
+	envLevel := strings.ToLower(util.LogLevelFromEnv())
+	effective := envLevel
+
+	if strings.TrimSpace(levelOverride) != "" {
+		effective = strings.ToLower(levelOverride)
+	}
+	if strings.TrimSpace(effective) == "" {
+		effective = string(LevelNone)
+	}
+	return Level(effective)
+}
+
+// New builds a slog.Logger using LOG_LEVEL from the loaded .env file,
+// optionally overridden by SetLevelOverride (CLI flag).
+func New() *slog.Logger {
+	level := resolveLevel()
 
 	// Default: NO logging
 	if level == LevelNone || level == "" {
@@ -41,4 +65,3 @@ func New(level Level) *slog.Logger {
 	})
 	return slog.New(handler)
 }
-

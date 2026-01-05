@@ -3,12 +3,16 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
+
+	"stegia/internal/logger"
 )
 
 var (
 	logLevel string
+	envName  string
 )
 
 var rootCmd = &cobra.Command{
@@ -31,9 +35,27 @@ func init() {
 		&logLevel,
 		"log-level",
 		"l",
-		"none",
-		"Log level: none, info, debug, error",
+		"",
+		"Override LOG_LEVEL in .env (supported: none, info, debug, error)",
 	)
 
+	rootCmd.PersistentFlags().StringVar(
+		&envName,
+		"env",
+		"",
+		"Environment name: ENV=<name> selects <name>.env (default: local.env)",
+	)
+
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if cmd.Flags().Changed("env") {
+			// Make ENV visible to util.LoadEnvFile(); do not read or print its value.
+			trimmedEnvName := strings.TrimSpace(envName)
+			os.Setenv("ENV", trimmedEnvName)
+		}
+		if cmd.Flags().Changed("log-level") {
+			logger.SetLevelOverride(logLevel)
+		}
+		return nil
+	}
 	rootCmd.AddCommand(totvsCmd)
 }
