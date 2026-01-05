@@ -560,3 +560,73 @@ time=2026-01-04T17:23:21.123-08:00 level=INFO msg="loading cached supplier" id=S
   "supplierId": "SUP-902341"
 }
 ```
+
+* Same for all commands...
+
+```console
+$ ./stegia totvs companies list --status ACTIVE
+- (ACTIVE) companyId=01  code=TOTVS-BR name=TOTVS BRASIL MATRIZ (São Paulo/SP)
+- (ACTIVE) companyId=02  code=TOTVS-GO name=TOTVS GOIÁS (Goiânia/GO)
+
+~/dev/github.com/marcellodesales/stegia-cli on  bugfix/list-companies-options! ⌚ 17:43:13
+$ ./stegia totvs companies list
+- (ACTIVE) companyId=01  code=TOTVS-BR name=TOTVS BRASIL MATRIZ (São Paulo/SP)
+- (ACTIVE) companyId=02  code=TOTVS-GO name=TOTVS GOIÁS (Goiânia/GO)
+- (INACTIVE) companyId=03  code=TOTVS-RJ name=TOTVS RIO DE JANEIRO (Rio de Janeiro/RJ)
+
+~/dev/github.com/marcellodesales/stegia-cli on  bugfix/list-companies-options! ⌚ 17:43:17
+$ ./stegia totvs companies list --status ACTIVE
+- (ACTIVE) companyId=01  code=TOTVS-BR name=TOTVS BRASIL MATRIZ (São Paulo/SP)
+- (ACTIVE) companyId=02  code=TOTVS-GO name=TOTVS GOIÁS (Goiânia/GO)
+
+~/dev/github.com/marcellodesales/stegia-cli on  bugfix/list-companies-options! ⌚ 17:43:20
+$ ./stegia --log-level debug totvs companies list --status ACTIVE
+time=2026-01-04T17:43:34.821-08:00 level=INFO msg="loaded env" envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env hostname=example.com
+time=2026-01-04T17:43:34.821-08:00 level=DEBUG msg="creating TOTVS client" hostname=example.com envFile=/Users/marcellodesales/dev/github.com/marcellodesales/stegia-cli/local.env
+
+=== HTTP REQUEST ===
+GET https://example.com/api/btb/v1/companies
+Authorization: Basic YWRtaW46YWRtaW4=
+Accept: application/json
+
+time=2026-01-04T17:43:34.821-08:00 level=DEBUG msg="mocking companies list" hostname=example.com
+
+=== HTTP RESPONSE ===
+HTTP/1.1 200
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "companyId": "01",
+      "companyCode": "TOTVS-BR",
+      "companyName": "TOTVS BRASIL MATRIZ",
+      "country": "BR",
+      "state": "SP",
+      "city": "São Paulo",
+      "status": "ACTIVE"
+    },
+    {
+      "companyId": "02",
+      "companyCode": "TOTVS-GO",
+      "companyName": "TOTVS GOIÁS",
+      "country": "BR",
+      "state": "GO",
+      "city": "Goiânia",
+      "status": "ACTIVE"
+    },
+    {
+      "companyId": "03",
+      "companyCode": "TOTVS-RJ",
+      "companyName": "TOTVS RIO DE JANEIRO",
+      "country": "BR",
+      "state": "RJ",
+      "city": "Rio de Janeiro",
+      "status": "INACTIVE"
+    }
+  ],
+  "count": 3
+}
+- (ACTIVE) companyId=01  code=TOTVS-BR name=TOTVS BRASIL MATRIZ (São Paulo/SP)
+- (ACTIVE) companyId=02  code=TOTVS-GO name=TOTVS GOIÁS (Goiânia/GO)
+```

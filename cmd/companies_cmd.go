@@ -9,6 +9,8 @@ import (
 	"stegia/internal/util"
 )
 
+var companyStatus string
+
 var companiesCmd = &cobra.Command{
 	Use:   "companies",
 	Short: "Company operations",
@@ -31,11 +33,18 @@ var companiesListCmd = &cobra.Command{
 			Builder: companies.Builder{},
 			Log:     log,
 		}
-		return ctrl.ListAndPrint()
+        return ctrl.ListAndPrint(companyStatus)
 	},
 }
 
 func init() {
 	totvsCmd.AddCommand(companiesCmd)
 	companiesCmd.AddCommand(companiesListCmd)
+
+	companiesListCmd.Flags().StringVar(
+		&companyStatus,
+		"status",
+		"",
+		"Filter by company status (e.g. ACTIVE, INACTIVE)",
+	)
 }
