@@ -19,7 +19,7 @@ var suppliersAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Create a supplier from a TOON file (lists companies first)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-        log := logger.New(logger.Level(logLevel))
+		log := logger.New()
 
 		toonPath, _ := cmd.Flags().GetString("file")
 		companyId, _ := cmd.Flags().GetString("company-id")
@@ -51,28 +51,28 @@ var suppliersAddCmd = &cobra.Command{
 }
 
 var suppliersViewCmd = &cobra.Command{
-    Use:   "view",
-    Short: "View a cached supplier by id (reads examples/suppliers/<id>.toon)",
-    RunE: func(cmd *cobra.Command, args []string) error {
-        log := logger.New(logger.Level(logLevel))
+	Use:   "view",
+	Short: "View a cached supplier by id (reads examples/suppliers/<id>.toon)",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		log := logger.New()
 
-        id, _ := cmd.Flags().GetString("id")
-        format, _ := cmd.Flags().GetString("format")
+		id, _ := cmd.Flags().GetString("id")
+		format, _ := cmd.Flags().GetString("format")
 
-        env := util.LoadTotvsEnv()
-        log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
+		env := util.LoadTotvsEnv()
+		log.Info("loaded env", "envFile", env.EnvFile, "hostname", env.Hostname)
 
-        cli := factory.ClientFactory{Log: log}.New(env)
-        sf := factory.ServiceFactory{Log: log}
-        suppliersSvc := sf.SuppliersService(cli)
+		cli := factory.ClientFactory{Log: log}.New(env)
+		sf := factory.ServiceFactory{Log: log}
+		suppliersSvc := sf.SuppliersService(cli)
 
-        ctrl := &suppliers.Controller{
-            Service: suppliersSvc,
-            Builder: suppliers.Builder{},
-            Log:     log,
-        }
-        return ctrl.ViewFromCache(id, format)
-    },
+		ctrl := &suppliers.Controller{
+			Service: suppliersSvc,
+			Builder: suppliers.Builder{},
+			Log:     log,
+		}
+		return ctrl.ViewFromCache(id, format)
+	},
 }
 
 func init() {

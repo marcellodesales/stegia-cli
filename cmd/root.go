@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"stegia/internal/logger"
 )
 
 var (
@@ -31,9 +33,15 @@ func init() {
 		&logLevel,
 		"log-level",
 		"l",
-		"none",
-		"Log level: none, info, debug, error",
+		"",
+		"Override LOG_LEVEL in .env (supported: none, info, debug, error)",
 	)
 
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if cmd.Flags().Changed("log-level") {
+			logger.SetLevelOverride(logLevel)
+		}
+		return nil
+	}
 	rootCmd.AddCommand(totvsCmd)
 }
