@@ -1,13 +1,10 @@
 # stegia
 
-A Go CLI for TOTVS Datasul REST integration prototyping.
+A Go CLI for integration prototyping with multiple companies as a discovery mechanism.
+
+* [ ] TOTVS Datasul REST
 
 ## What this repo includes
-
-- `stegia totvs companies list`
-  - Prints the HTTP request and a mocked HTTP response for `GET /api/btb/v1/companies` when `TOTVS_HOSTNAME=example.com`.
-- `stegia totvs suppliers add -f <file.toon> [--company-id <id>]`
-  - Parses a TOON file, selects a company (explicit or auto-match by city/state), prints the HTTP request, and prints a mocked create response when `TOTVS_HOSTNAME=example.com`.
 
 The codebase is organized using:
 - **Controller / Service / Builder** per feature (companies, suppliers)
@@ -49,7 +46,50 @@ If env files or vars are missing, it defaults to `admin:admin` and `example.com`
 - This repo intentionally avoids real HTTP calls by default (prototype mode).
 - Replace endpoints and payload field names to match your installed Datasul Swagger (`apipublic*.json`).
 
-# CLI Examples
+# CLI Global
+
+```console
+./stegia --help
+stegia: utilities for integrations and automation
+
+Usage:
+  stegia [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  totvs       TOTVS integration commands
+
+Flags:
+      --env string         Environment name: ENV=<name> selects <name>.env (default: local.env)
+  -h, --help               help for stegia
+  -l, --log-level string   Override LOG_LEVEL in .env (supported: none, info, debug, error)
+
+Use "stegia [command] --help" for more information about a command.
+```
+
+## Totvs CLI Commands
+
+```console
+./stegia totvs --help
+TOTVS integration commands
+
+Usage:
+  stegia totvs [command]
+
+Available Commands:
+  companies   Company operations
+  suppliers   Supplier (fornecedor) operations
+
+Flags:
+  -h, --help   help for totvs
+
+Global Flags:
+      --env string         Environment name: ENV=<name> selects <name>.env (default: local.env)
+  -l, --log-level string   Override LOG_LEVEL in .env (supported: none, info, debug, error)
+
+Use "stegia totvs [command] --help" for more information about a command.
+```
 
 ## totvs companies list
 
