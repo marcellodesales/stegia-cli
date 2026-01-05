@@ -1,6 +1,7 @@
 package suppliers
 
 import (
+    "context"
     "encoding/json"
 	"fmt"
 	"log/slog"
@@ -50,7 +51,10 @@ func (c *Controller) AddFromTOON(filePath string, explicitCompanyId string) erro
 		return err
 	}
 
-	util.PrintHTTPRequest(req, body)
+
+    if c.Log.Enabled(context.Background(), slog.LevelDebug) {
+        util.PrintHTTPRequest(req, body)
+    }
 
 	resp, status, err := c.Service.Create(payload, companyId)
 	if err != nil {
@@ -59,7 +63,10 @@ func (c *Controller) AddFromTOON(filePath string, explicitCompanyId string) erro
 	}
 
 	respBytes := util.JSONPretty(resp)
-	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, respBytes)
+
+    if c.Log.Enabled(context.Background(), slog.LevelDebug) {
+    	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, respBytes)
+    }
 
 	// Cache only in mock mode (example.com) OR always cache, your choice.
 	if c.Service.Client.Hostname == "example.com" {
@@ -142,8 +149,6 @@ func (c *Controller) ViewFromCache(id string, format string) error {
         c.Log.Error("failed to read cached supplier", "path", cachePath, "error", err)
         return err
     }
-
-    fmt.Println("\n=== CACHED SUPPLIER ===")
 
     if format == "toon" {
         fmt.Println(string(raw))

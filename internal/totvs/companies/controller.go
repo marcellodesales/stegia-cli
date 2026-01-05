@@ -1,6 +1,7 @@
 package companies
 
 import (
+    "context"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -22,7 +23,9 @@ func (c *Controller) ListAndPrint() error {
 		return err
 	}
 
-	util.PrintHTTPRequest(req, nil)
+    if c.Log.Enabled(context.Background(), slog.LevelDebug) {
+    	util.PrintHTTPRequest(req, nil)
+    }
 
 	res, status, err := c.Service.List()
 	if err != nil {
@@ -31,9 +34,11 @@ func (c *Controller) ListAndPrint() error {
 	}
 
 	body := util.JSONPretty(res)
-	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, body)
 
-	fmt.Println("\n=== COMPANIES (ACTIVE) ===")
+    if c.Log.Enabled(context.Background(), slog.LevelDebug) {
+    	util.PrintHTTPResponse(status, map[string]string{"Content-Type": "application/json"}, body)
+    }
+
 	for _, it := range res.Items {
 		if strings.EqualFold(it.Status, "ACTIVE") {
 			fmt.Printf("- companyId=%s code=%s name=%s (%s/%s)\n",

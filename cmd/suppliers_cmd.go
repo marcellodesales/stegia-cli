@@ -19,7 +19,7 @@ var suppliersAddCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Create a supplier from a TOON file (lists companies first)",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		log := logger.New()
+        log := logger.New(logger.Level(logLevel))
 
 		toonPath, _ := cmd.Flags().GetString("file")
 		companyId, _ := cmd.Flags().GetString("company-id")
@@ -54,7 +54,7 @@ var suppliersViewCmd = &cobra.Command{
     Use:   "view",
     Short: "View a cached supplier by id (reads examples/suppliers/<id>.toon)",
     RunE: func(cmd *cobra.Command, args []string) error {
-        log := logger.New()
+        log := logger.New(logger.Level(logLevel))
 
         id, _ := cmd.Flags().GetString("id")
         format, _ := cmd.Flags().GetString("format")
