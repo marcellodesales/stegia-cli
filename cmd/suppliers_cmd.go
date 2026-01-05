@@ -84,7 +84,7 @@ func init() {
 	suppliersAddCmd.Flags().String("company-id", "", "CompanyId header value (optional; auto-selected if omitted)")
 
 	suppliersViewCmd.Flags().String("id", "", "Supplier ID (e.g., SUP-902341)")
-    suppliersViewCmd.Flags().StringP("format", "f", "toon", "Output format: toon or json")
+	suppliersViewCmd.Flags().StringP("format", "f", "toon", "Output format: toon or json")
 	_ = suppliersViewCmd.MarkFlagRequired("id")
-    suppliersCmd.AddCommand(suppliersViewCmd)
+	suppliersCmd.AddCommand(suppliersViewCmd)
 }

@@ -33,7 +33,7 @@ var companiesListCmd = &cobra.Command{
 			Builder: companies.Builder{},
 			Log:     log,
 		}
-        return ctrl.ListAndPrint(companyStatus)
+		return ctrl.ListAndPrint(companyStatus)
 	},
 }
 
