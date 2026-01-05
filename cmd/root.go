@@ -47,9 +47,10 @@ func init() {
 	)
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if cmd.Flags().Changed("env") && strings.TrimSpace(envName) != "" {
+		if cmd.Flags().Changed("env") {
 			// Make ENV visible to util.LoadEnvFile(); do not read or print its value.
-			os.Setenv("ENV", envName)
+			trimmedEnvName := strings.TrimSpace(envName)
+			os.Setenv("ENV", trimmedEnvName)
 		}
 		if cmd.Flags().Changed("log-level") {
 			logger.SetLevelOverride(logLevel)
